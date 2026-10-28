@@ -111,9 +111,9 @@ class Hp7Coordinator(DataUpdateCoordinator):
         if watching == self._slowed_for_stream:
             return
         self._slowed_for_stream = watching
-        self.update_interval = timedelta(
-            seconds=UPDATE_INTERVAL_SEC * (4 if watching else 1)
-        )
+        # Fork: no 4x slowdown. go2rtc -> Scrypted watches the stream 24/7, so
+        # "watching" never clears and rings were picked up up to ~60 s late.
+        self.update_interval = timedelta(seconds=UPDATE_INTERVAL_SEC)
         _LOGGER.debug(
             "EZVIZ HP7: poll interval -> %ss (local stream viewers: %s)",
             self.update_interval.total_seconds(), watching,
